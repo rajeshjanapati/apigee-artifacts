@@ -184,31 +184,36 @@ $headers = @{Authorization = "Bearer $token"}
     $envpath = $baseURL+$org+"/environments"
     $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-env.json"
     
-    if(!(test-path -PathType container env))
-    {
-        mkdir "environments"
-        cd environments
-    }
-    else {
-        cd environments
-    }
+    # if(!(test-path -PathType container env))
+    # {
+    #     mkdir "environments"
+    #     cd environments
+    # }
+    # else {
+    #     cd environments
+    # }
+    mkdir "environments"
+    cd environments
 
     $envpath = $baseURL+$org+"/environments"
     $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-env.json"
     
 
     # -----------------------------Environments - KVMs -------------------------------------
-    if(!(test-path -PathType container env-kvms))
-    {
-        mkdir "env-kvms"
-        cd env-kvms
-    }
-    else {
-        cd env-kvms
-    }
+    # if(!(test-path -PathType container env-kvms))
+    # {
+    #     mkdir "env-kvms"
+    #     cd env-kvms
+    # }
+    # else {
+    #     cd env-kvms
+    # }
+    
     foreach ($env in $($environments)) {
         mkdir -p "$($env)"
         cd $($env)
+        mkdir "env-kvms"
+        cd env-kvms
 
         $kvmpathenv = $baseURL+$org+"/environments/"+$($env)+"/keyvaluemaps"
         $envkvms = Invoke-RestMethod -Uri $kvmpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-kvms.json"
@@ -218,18 +223,17 @@ $headers = @{Authorization = "Bearer $token"}
             $envkvm = Invoke-RestMethod -Uri $kvmpath2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-($($envkvm)).json"
         }
         cd ..
-        cd ..
     # -------------------------------Environments - Targetservers-----------------------------
-        if(!(test-path -PathType container env-Targetservers))
-        {
-            mkdir "env-Targetservers"
-            cd env-Targetservers
-        }
-        else {
-            cd env-Targetservers
-        }
-        mkdir -p "$($env)"
-        cd $($env)
+        # if(!(test-path -PathType container env-Targetservers))
+        # {
+        #     mkdir "env-Targetservers"
+        #     cd env-Targetservers
+        # }
+        # else {
+        #     cd env-Targetservers
+        # }
+        mkdir "env-Targetservers"
+        cd env-Targetservers
 
         $targetserverpathenv = $baseURL+$org+"/environments/"+$($env)+"/targetservers"
         $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-targetservers.json"
@@ -239,24 +243,22 @@ $headers = @{Authorization = "Bearer $token"}
             $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-($($envtargetserver)).json"
         }
         cd ..
-        cd ..
     # --------------------------------Environment - Proxies--------------------------------------
 
-        if(!(test-path -PathType container env-proxies))
-        {
-            mkdir "env-proxies"
-            cd env-proxies
-        }
-        else {
-            cd env-proxies
-        }
-        mkdir -p "$($env)"
-        cd $($env)
+        # if(!(test-path -PathType container env-proxies))
+        # {
+        #     mkdir "env-proxies"
+        #     cd env-proxies
+        # }
+        # else {
+        #     cd env-proxies
+        # }
+        mkdir "env-proxies"
+        cd env-proxies
 
         $proxypathenv = $baseURL+$org+"/environments/"+$($env)+"/deployments"
         $envproxy = Invoke-RestMethod -Uri $proxypathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-proxies.json"
         
-        cd ..
         cd ..
     }
     cd ..
