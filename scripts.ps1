@@ -182,7 +182,7 @@ $headers = @{Authorization = "Bearer $token"}
 
 # -----------------------------Environments Start-------------------------------------
     $envpath = $baseURL+$org+"/environments"
-    $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-env.json"
+    $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
     
     # if(!(test-path -PathType container env))
     # {
