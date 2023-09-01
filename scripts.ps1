@@ -38,7 +38,7 @@ $headers = @{Authorization = "Bearer $token"}
     }
 
     $path = $baseURL+$org+"/apis"
-    $proxies = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/$org/apis" -Method 'GET' -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-proxies.json"
+    $proxies = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/$org/apis" -Method 'GET' -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
     foreach ($proxy in $($proxies.proxies)) {
         $path1 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions"
