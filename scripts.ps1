@@ -38,31 +38,49 @@ $headers = @{Authorization = "Bearer $token"}
     }
 
     $path = $baseURL+$org+"/apis"
-    $proxies = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/$org/apis" -Method 'GET' -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
+    $proxies = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/$org/apis" -Method 'GET' -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-proxies.json"
 
     foreach ($proxy in $($proxies.proxies)) {
         $path1 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions"
         $proxyRevs = Invoke-RestMethod -Uri $path1 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
-        # Get the latest deployed revision number
-        $latestRevision = $proxyRevs | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
-
-        if(!(test-path -PathType container $($proxy.name))){
+        foreach ($proxyRevs in $($proxyRevs)) {
+            if(!(test-path -PathType container $($proxy.name))){
             mkdir -p "$($proxy.name)"
             cd $($proxy.name)
-        }
-        else {
-            cd $($proxy.name)
+            }
+            else {
+                cd $($proxy.name)
+            }
+            $path2 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions/"+$($proxyRevs)+"?format=bundle"
+            $zipFile = $org+"-proxy-"+$($proxy.name)+"-rev"+$($proxyRevs)+".zip"
+            
+            $response = Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $zipFile
+
+            Expand-Archive -Path $zipFile -Force
+            Remove-Item -Path $zipFile -Force
+            cd ..
         }
 
-        $path2 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions/"+$($latestRevision)+"?format=bundle"
-        $zipFile = $org+"-proxy-"+$($proxy.name)+"-rev"+$($latestRevision)+".zip"
+        # # Get the latest deployed revision number
+        # $latestRevision = $proxyRevs | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+
+        # if(!(test-path -PathType container $($proxy.name))){
+        #     mkdir -p "$($proxy.name)"
+        #     cd $($proxy.name)
+        # }
+        # else {
+        #     cd $($proxy.name)
+        # }
+
+        # $path2 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions/"+$($latestRevision)+"?format=bundle"
+        # $zipFile = $org+"-proxy-"+$($proxy.name)+"-rev"+$($latestRevision)+".zip"
         
-        $response = Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $zipFile
+        # $response = Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $zipFile
 
-        Expand-Archive -Path $zipFile -Force
-        Remove-Item -Path $zipFile -Force
-        cd..
+        # Expand-Archive -Path $zipFile -Force
+        # Remove-Item -Path $zipFile -Force
+        # cd..
     }
     cd..
 
