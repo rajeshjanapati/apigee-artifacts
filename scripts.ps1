@@ -76,7 +76,7 @@ $headers = @{Authorization = "Bearer $token"}
     }
 
     $sharedflowpath = $baseURL+$org+"/sharedflows"
-    $sharedflows = Invoke-RestMethod -Uri $sharedflowpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-sharedflow.json"
+    $sharedflows = Invoke-RestMethod -Uri $sharedflowpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
     foreach ($sharedflow in $($sharedflows.sharedflows)) {
         $flowDetailRev = $baseURL+$org+"/sharedflows/"+$($sharedflow.name)+"/revisions"
@@ -192,7 +192,7 @@ $headers = @{Authorization = "Bearer $token"}
     # else {
     #     cd environments
     # }
-    mkdir "environments"
+    mkdir environments
     cd environments
 
     $envpath = $baseURL+$org+"/environments"
@@ -212,15 +212,18 @@ $headers = @{Authorization = "Bearer $token"}
     foreach ($env in $($environments)) {
         mkdir -p "$($env)"
         cd $($env)
-        mkdir "env-kvms"
+        mkdir env-kvms
         cd env-kvms
 
         $kvmpathenv = $baseURL+$org+"/environments/"+$($env)+"/keyvaluemaps"
         $envkvms = Invoke-RestMethod -Uri $kvmpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-kvms.json"
 
         foreach ($envkvm in $($envkvms)) {
+            mkdir -p "$envkvm"
+            cd $envkvm
             $kvmpathenv2 = $kvmpathenv+"/"+$($envkvm)+"/entries"
             $envkvm = Invoke-RestMethod -Uri $kvmpath2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-($($envkvm)).json"
+            cd ..
         }
         cd ..
     # -------------------------------Environments - Targetservers-----------------------------
@@ -232,15 +235,18 @@ $headers = @{Authorization = "Bearer $token"}
         # else {
         #     cd env-Targetservers
         # }
-        mkdir "env-Targetservers"
+        mkdir env-Targetservers
         cd env-Targetservers
 
         $targetserverpathenv = $baseURL+$org+"/environments/"+$($env)+"/targetservers"
         $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-targetservers.json"
 
         foreach ($envtargetserver in $($envtargetservers)) {
+            mkdir -p "$envtargetserver"
+            cd $envtargetserver
             $targetserverpathenv2 = $envtargetserver+"/"+$($envtargetserver)
             $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-($($envtargetserver)).json"
+            cd ..
         }
         cd ..
     # --------------------------------Environment - Proxies--------------------------------------
@@ -253,7 +259,7 @@ $headers = @{Authorization = "Bearer $token"}
         # else {
         #     cd env-proxies
         # }
-        mkdir "env-proxies"
+        mkdir env-proxies
         cd env-proxies
 
         $proxypathenv = $baseURL+$org+"/environments/"+$($env)+"/deployments"
