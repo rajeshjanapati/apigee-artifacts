@@ -122,6 +122,9 @@ $headers = @{Authorization = "Bearer $token"}
     }
     cd ..
 
+    $kvmpath = $baseURL+$org+"/keyvaluemaps"
+    $orgkvms = Invoke-RestMethod -Uri $kvmpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-kvms.json"
+
 # ----------------------------API Products------------------------------------------
     if(!(test-path -PathType container apiproducts))
     {
@@ -178,6 +181,9 @@ $headers = @{Authorization = "Bearer $token"}
     $masterDeployments = Invoke-RestMethod -Uri $masterDeploymentPath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-master-proxy-deployments.json"
 
 # -----------------------------Environments Start-------------------------------------
+    $envpath = $baseURL+$org+"/environments"
+    $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-env.json"
+    
     if(!(test-path -PathType container env))
     {
         mkdir "environments"
@@ -190,7 +196,7 @@ $headers = @{Authorization = "Bearer $token"}
     $envpath = $baseURL+$org+"/environments"
     $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-env.json"
     
-    
+
     # -----------------------------Environments - KVMs -------------------------------------
     if(!(test-path -PathType container env-kvms))
     {
@@ -200,10 +206,7 @@ $headers = @{Authorization = "Bearer $token"}
     else {
         cd env-kvms
     }
-    Write-Host "entered into environments..."
-    
     foreach ($env in $($environments)) {
-        Write-Host "entered into each env..."
         mkdir -p "$($env)"
         cd $($env)
 
@@ -258,9 +261,9 @@ $headers = @{Authorization = "Bearer $token"}
     }
     cd ..
 
-    # $envpath = $baseURL+$org+"/environments"
-    # $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-env.json"
-    # cd ..
+    $envpath = $baseURL+$org+"/environments"
+    $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-env.json"
+    cd ..
 
 
 # -----------------------------Environments Closing-------------------------------------
