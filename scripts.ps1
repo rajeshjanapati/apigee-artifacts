@@ -108,7 +108,7 @@ $headers = @{Authorization = "Bearer $token"}
             else {
                 cd $($sharedflow.name)
             }
-            $flowDetailRev2 = $baseURL+$org+"/apis/"+$($sharedflow.name)+"/revisions/"+$($sharedflow)+"?format=bundle"
+            $flowDetailRev2 = $baseURL+$org+"/apis/"+$($sharedflow.name)+"/revisions/"+$($FlowRevs)+"?format=bundle"
             $zipFile = $org+"-proxy-"+$($sharedflow.name)+"-rev"+$($flowDetailRev2)+".zip"
             
             $response = Invoke-RestMethod -Uri $flowDetailRev2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $zipFile
