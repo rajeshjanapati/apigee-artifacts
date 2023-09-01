@@ -100,27 +100,44 @@ $headers = @{Authorization = "Bearer $token"}
         $flowDetailRev = $baseURL+$org+"/sharedflows/"+$($sharedflow.name)+"/revisions"
         $FlowRevs = Invoke-RestMethod -Uri $flowDetailRev -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
-        if(!(test-path -PathType container $($sharedflow.name))){
+        foreach ($FlowRevs in $($FlowRevs)) {
+            if(!(test-path -PathType container $($sharedflow.name))){
             mkdir -p "$($sharedflow.name)"
             cd $($sharedflow.name)
-        }
-        else {
-            cd $($sharedflow.name)
+            }
+            else {
+                cd $($sharedflow.name)
+            }
+            $flowDetailRev2 = $baseURL+$org+"/apis/"+$($sharedflow.name)+"/revisions/"+$($sharedflow)+"?format=bundle"
+            $zipFile = $org+"-proxy-"+$($sharedflow.name)+"-rev"+$($flowDetailRev2)+".zip"
+            
+            $response = Invoke-RestMethod -Uri $flowDetailRev2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $zipFile
+
+            Expand-Archive -Path $zipFile -Force
+            Remove-Item -Path $zipFile -Force
+            cd ..
         }
 
-        # Get the latest deployed revision number
-        $latestFlowRevision = $($FlowRevs) | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
-        $flowDetailRev2 = $baseURL+$org+"/sharedflows/"+$($sharedflow.name)+"/revisions/"+$($latestFlowRevision)+"?format=bundle"
-        $SharedFlowZipFile = $org+"-sharedflow-"+$($sharedflow.name)+"-rev"+$($latestFlowRevision)+".zip"
+        # if(!(test-path -PathType container $($sharedflow.name))){
+        #     mkdir -p "$($sharedflow.name)"
+        #     cd $($sharedflow.name)
+        # }
+        # else {
+        #     cd $($sharedflow.name)
+        # }
+
+        # # Get the latest deployed revision number
+        # $latestFlowRevision = $($FlowRevs) | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+        # $flowDetailRev2 = $baseURL+$org+"/sharedflows/"+$($sharedflow.name)+"/revisions/"+$($latestFlowRevision)+"?format=bundle"
+        # $SharedFlowZipFile = $org+"-sharedflow-"+$($sharedflow.name)+"-rev"+$($latestFlowRevision)+".zip"
         
-        $response = Invoke-RestMethod -Uri $flowDetailRev2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $SharedFlowZipFile
+        # $response = Invoke-RestMethod -Uri $flowDetailRev2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $SharedFlowZipFile
 
-        Expand-Archive -Path $SharedFlowZipFile -Force
-        Remove-Item -Path $SharedFlowZipFile -Force
-        cd ..
+        # Expand-Archive -Path $SharedFlowZipFile -Force
+        # Remove-Item -Path $SharedFlowZipFile -Force
+        # cd ..
     }
     cd ..
-
 # ----------------------------------Org KVMs---------------------------------------
     if(!(test-path -PathType container org-kvms))
     {
