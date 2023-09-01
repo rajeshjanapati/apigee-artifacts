@@ -189,23 +189,21 @@ $headers = @{Authorization = "Bearer $token"}
 
     $envpath = $baseURL+$org+"/environments"
     $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-env.json"
-    # cd ..
-
-    # $envpath = $baseURL+$org+"/environments"
-    # $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-env.json"
-
+    
+    
     # -----------------------------Environments - KVMs -------------------------------------
-
+    if(!(test-path -PathType container env-kvms))
+    {
+        mkdir "env-kvms"
+        cd env-kvms
+    }
+    else {
+        cd env-kvms
+    }
+    Write-Host "entered into environments..."
+    
     foreach ($env in $($environments)) {
-        
-        if(!(test-path -PathType container env-kvms))
-        {
-            mkdir "env-kvms"
-            cd env-kvms
-        }
-        else {
-            cd env-kvms
-        }
+        Write-Host "entered into each env..."
         mkdir -p "$($env)"
         cd $($env)
 
