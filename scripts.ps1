@@ -7,26 +7,26 @@ $headers = @{Authorization = "Bearer $token"}
 # --------------------Apigee All Artifacts-------------------------------------------
 
 # ----------------------create apigee organisation level artifacts folder------------
-if(!(test-path -PathType container fl-apigee-org)){
-      mkdir "fl-apigee-org"
-      cd apigee
-      Write-Host "inside if"
-}
-else {
-      cd fl-apigee-org
-      Write-Host "else"
-}
+# if(!(test-path -PathType container fl-apigee-org)){
+#       mkdir "fl-apigee-org"
+#       cd apigee
+#       Write-Host "inside if"
+# }
+# else {
+#       cd fl-apigee-org
+#       Write-Host "else"
+# }
 
-# create apigee artifacts non prod folder
-if(!(test-path -PathType container artifacts-nonprod)){
-      mkdir "artifacts-nonprod"
-      cd artifacts-nonprod
-      Write-Host "inside 2nd if"
-}
-else {
-      cd artifacts-nonprod
-      Write-Host "2nd else"
-}
+# # create apigee artifacts non prod folder
+# if(!(test-path -PathType container artifacts-nonprod)){
+#       mkdir "artifacts-nonprod"
+#       cd artifacts-nonprod
+#       Write-Host "inside 2nd if"
+# }
+# else {
+#       cd artifacts-nonprod
+#       Write-Host "2nd else"
+# }
 
 # --------------------------------Proxies-------------------------------------------
     if(!(test-path -PathType container proxies)){
