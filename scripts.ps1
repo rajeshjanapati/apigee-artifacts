@@ -58,7 +58,7 @@ $headers = @{Authorization = "Bearer $token"}
             $response = Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $zipFile
 
             Expand-Archive -Path $zipFile -Force
-            Remove-Item -Path $zipFile -Force
+            # Remove-Item -Path $zipFile -Force
             cd ..
         }
 
@@ -114,7 +114,7 @@ $headers = @{Authorization = "Bearer $token"}
             $response = Invoke-RestMethod -Uri $flowDetailRev2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $sharedflowzipFile
 
             Expand-Archive -Path $sharedflowzipFile -Force
-            Remove-Item -Path $sharedflowzipFile -Force
+            # Remove-Item -Path $sharedflowzipFile -Force
             cd ..
         }
 
