@@ -7,28 +7,28 @@ $headers = @{Authorization = "Bearer $token"}
 # --------------------Apigee All Artifacts-------------------------------------------
 
 # ----------------------create apigee organisation level artifacts folder------------
-# if(!(test-path -PathType container fl-apigee-org)){
-#       mkdir "fl-apigee-org"
-#       cd apigee
-#       Write-Host "inside if"
-# }
-# else {
-#       cd fl-apigee-org
-#       Write-Host "else"
-# }
+if(!(test-path -PathType container apigee)){
+      mkdir "apigee"
+      cd apigee
+      Write-Host "inside if"
+}
+else {
+      cd apigee
+      Write-Host "else"
+}
 
-# # create apigee artifacts non prod folder
-# if(!(test-path -PathType container artifacts-nonprod)){
-#       mkdir "artifacts-nonprod"
-#       cd artifacts-nonprod
-#       Write-Host "inside 2nd if"
-# }
-# else {
-#       cd artifacts-nonprod
-#       Write-Host "2nd else"
-# }
+# create apigee artifacts non prod folder
+if(!(test-path -PathType container artifacts-nonprod)){
+      mkdir "artifacts-nonprod"
+      cd artifacts-nonprod
+      Write-Host "inside 2nd if"
+}
+else {
+      cd artifacts-nonprod
+      Write-Host "2nd else"
+}
 
-# --------------------------------Proxies-------------------------------------------
+# --------------------------------Proxies - All Revisions-------------------------------------------
     if(!(test-path -PathType container proxies)){
         mkdir "proxies"
         cd proxies
@@ -38,6 +38,7 @@ $headers = @{Authorization = "Bearer $token"}
     }
 
     $path = $baseURL+$org+"/apis"
+    Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/$org/apis" -Method 'GET' -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "proxies.json"
     $proxies = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/$org/apis" -Method 'GET' -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
     foreach ($proxy in $($proxies.proxies)) {
@@ -53,7 +54,7 @@ $headers = @{Authorization = "Bearer $token"}
                 cd $($proxy.name)
             }
             $path2 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions/"+$($proxyRevs)+"?format=bundle"
-            $zipFile = $($proxy.name)+$($proxyRevs)+".zip"
+            $zipFile = $org+"-proxy-"+$($proxy.name)+"-rev"+$($proxyRevs)+".zip"
             
             $response = Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $zipFile
 
@@ -61,30 +62,48 @@ $headers = @{Authorization = "Bearer $token"}
             # Remove-Item -Path $zipFile -Force
             cd ..
         }
-
-        # # Get the latest deployed revision number
-        # $latestRevision = $proxyRevs | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
-
-        # if(!(test-path -PathType container $($proxy.name))){
-        #     mkdir -p "$($proxy.name)"
-        #     cd $($proxy.name)
-        # }
-        # else {
-        #     cd $($proxy.name)
-        # }
-
-        # $path2 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions/"+$($latestRevision)+"?format=bundle"
-        # $zipFile = $org+"-proxy-"+$($proxy.name)+"-rev"+$($latestRevision)+".zip"
-        
-        # $response = Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $zipFile
-
-        # Expand-Archive -Path $zipFile -Force
-        # Remove-Item -Path $zipFile -Force
-        # cd..
     }
     cd..
 
-# --------------------------------SharedFlows-------------------------------------------
+# --------------------------------Proxies- Latest Revision------------------------------------------
+    # if(!(test-path -PathType container proxies)){
+    #     mkdir "proxies"
+    #     cd proxies
+    # }
+    # else {
+    #     cd proxies
+    # }
+
+    # $path = $baseURL+$org+"/apis"
+    # $proxies = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/$org/apis" -Method 'GET' -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
+
+    # foreach ($proxy in $($proxies.proxies)) {
+    #     $path1 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions"
+    #     $proxyRevs = Invoke-RestMethod -Uri $path1 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
+
+    #     # Get the latest deployed revision number
+    #     $latestRevision = $proxyRevs | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+
+    #     if(!(test-path -PathType container $($proxy.name))){
+    #         mkdir -p "$($proxy.name)"
+    #         cd $($proxy.name)
+    #     }
+    #     else {
+    #         cd $($proxy.name)
+    #     }
+
+    #     $path2 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions/"+$($latestRevision)+"?format=bundle"
+    #     $zipFile = $org+"-proxy-"+$($proxy.name)+"-rev"+$($latestRevision)+".zip"
+        
+    #     $response = Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $zipFile
+
+    #     Expand-Archive -Path $zipFile -Force
+    #     Remove-Item -Path $zipFile -Force
+    #     cd..
+    # }
+    # cd..
+
+# --------------------------------SharedFlows - All Revs---------------------------------------------
     if(!(test-path -PathType container SharedFlows)){
         mkdir "SharedFlows"
         cd SharedFlows
@@ -94,6 +113,7 @@ $headers = @{Authorization = "Bearer $token"}
     }
 
     $sharedflowpath = $baseURL+$org+"/sharedflows"
+    Invoke-RestMethod -Uri $sharedflowpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "sharedflows.json"
     $sharedflows = Invoke-RestMethod -Uri $sharedflowpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
     foreach ($sharedflow in $($sharedflows.sharedflows)) {
@@ -109,38 +129,58 @@ $headers = @{Authorization = "Bearer $token"}
                 cd $($sharedflow.name)
             }
             $flowDetailRev2 = $baseURL+$org+"/sharedflows/"+$($sharedflow.name)+"/revisions/"+$($FlowRevs)+"?format=bundle"
-            $sharedflowzipFile = $($sharedflow.name)+$($FlowRevs)+".zip"
-            
+            $sharedflowzipFile = $org+"-sharedflows-"+$($sharedflow.name)+"-rev"+$($FlowRevs)+".zip"
+
             $response = Invoke-RestMethod -Uri $flowDetailRev2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $sharedflowzipFile
 
             Expand-Archive -Path $sharedflowzipFile -Force
             # Remove-Item -Path $sharedflowzipFile -Force
             cd ..
         }
-
-        # if(!(test-path -PathType container $($sharedflow.name))){
-        #     mkdir -p "$($sharedflow.name)"
-        #     cd $($sharedflow.name)
-        # }
-        # else {
-        #     cd $($sharedflow.name)
-        # }
-
-        # # Get the latest deployed revision number
-        # $latestFlowRevision = $($FlowRevs) | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
-        # $flowDetailRev2 = $baseURL+$org+"/sharedflows/"+$($sharedflow.name)+"/revisions/"+$($latestFlowRevision)+"?format=bundle"
-        # $SharedFlowZipFile = $org+"-sharedflow-"+$($sharedflow.name)+"-rev"+$($latestFlowRevision)+".zip"
-        
-        # $response = Invoke-RestMethod -Uri $flowDetailRev2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $SharedFlowZipFile
-
-        # Expand-Archive -Path $SharedFlowZipFile -Force
-        # Remove-Item -Path $SharedFlowZipFile -Force
-        # cd ..
     }
     cd ..
-# ----------------------------------Org KVMs---------------------------------------
-    if(!(test-path -PathType container org-kvms))
-    {
+
+# ------------------------------------SharedFlows - Latest Revision---------------------------------------
+
+    # if(!(test-path -PathType container SharedFlows)){
+    #     mkdir "SharedFlows"
+    #     cd SharedFlows
+    # }
+    # else {
+    #     cd SharedFlows
+    # }
+
+    # $sharedflowpath = $baseURL+$org+"/sharedflows"
+    # $sharedflows = Invoke-RestMethod -Uri $sharedflowpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
+
+    # foreach ($sharedflow in $($sharedflows.sharedflows)) {
+    #     $flowDetailRev = $baseURL+$org+"/sharedflows/"+$($sharedflow.name)+"/revisions"
+    #     $FlowRevs = Invoke-RestMethod -Uri $flowDetailRev -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
+
+    #     if(!(test-path -PathType container $($sharedflow.name))){
+    #         mkdir -p "$($sharedflow.name)"
+    #         cd $($sharedflow.name)
+    #     }
+    #     else {
+    #         cd $($sharedflow.name)
+    #     }
+
+    #     # Get the latest deployed revision number
+    #     $latestFlowRevision = $($FlowRevs) | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
+    #     $flowDetailRev2 = $baseURL+$org+"/sharedflows/"+$($sharedflow.name)+"/revisions/"+$($latestFlowRevision)+"?format=bundle"
+    #     $SharedFlowZipFile = $org+"-sharedflow-"+$($sharedflow.name)+"-rev"+$($latestFlowRevision)+".zip"
+        
+    #     $response = Invoke-RestMethod -Uri $flowDetailRev2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $SharedFlowZipFile
+
+    #     Expand-Archive -Path $SharedFlowZipFile -Force
+    #     Remove-Item -Path $SharedFlowZipFile -Force
+    #     cd ..
+    # }
+    # cd ..
+
+
+# ----------------------------------Org KVMs------------------------------------------------------------
+    if(!(test-path -PathType container org-kvms)){
         mkdir "org-kvms"
         cd org-kvms
     }
@@ -149,16 +189,24 @@ $headers = @{Authorization = "Bearer $token"}
     }
 
     $kvmpath = $baseURL+$org+"/keyvaluemaps"
+    Invoke-RestMethod -Uri $kvmpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-kvms.json"
+
     $orgkvms = Invoke-RestMethod -Uri $kvmpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
     foreach ($orgkvm in $($orgkvms)) {
+        if(!(test-path -PathType container $orgkvm)){
+        mkdir -p "$orgkvm"
+        cd $orgkvm
+        }
+        else {
+            cd $orgkvm
+        }
         $kvmpath2 = $kvmpath+"/"+$($orgkvm)+"/entries"
         $kvm = Invoke-RestMethod -Uri $kvmpath2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-($($orgkvm)).json"
+        cd ..
     }
     cd ..
 
-    $kvmpath = $baseURL+$org+"/keyvaluemaps"
-    $orgkvms = Invoke-RestMethod -Uri $kvmpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-kvms.json"
 
 # ----------------------------API Products------------------------------------------
     if(!(test-path -PathType container apiproducts))
@@ -174,8 +222,7 @@ $headers = @{Authorization = "Bearer $token"}
     $apiproducts = Invoke-RestMethod -Uri $productpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-apiproducts.json"
     cd ..
 
-    $productpath = $baseURL+$org+"/apiproducts"
-    $apiproducts = Invoke-RestMethod -Uri $productpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-apiproducts.json"
+    Invoke-RestMethod -Uri $productpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-apiproducts.json"
 
 # -----------------------------Developers------------------------------------------
     if(!(test-path -PathType container developers))
@@ -191,8 +238,7 @@ $headers = @{Authorization = "Bearer $token"}
     $developers = Invoke-RestMethod -Uri $developerpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-developers.json"
     cd ..
 
-    $developerpath = $baseURL+$org+"/developers"
-    $developers = Invoke-RestMethod -Uri $developerpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-developers.json"
+    Invoke-RestMethod -Uri $developerpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-developers.json"
 
 # ------------------------------Apps-------------------------------------------------
     if(!(test-path -PathType container apps))
@@ -208,110 +254,133 @@ $headers = @{Authorization = "Bearer $token"}
     $Appdetails = Invoke-RestMethod -Uri $Apps -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-apps.json"
     cd ..
 
-    $Apps = $baseURL+$org+"/apps?expand=true"
-    $Appdetails = Invoke-RestMethod -Uri $Apps -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-apps.json"
+    Invoke-RestMethod -Uri $Apps -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-apps.json"
 
 # ------------------------------master-deployments-proxies----------------------------
     $masterDeploymentPath = $baseURL+$org+"/deployments"
     $masterDeployments = Invoke-RestMethod -Uri $masterDeploymentPath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-master-proxy-deployments.json"
 
 # -----------------------------Environments Start-------------------------------------
-    $envpath = $baseURL+$org+"/environments"
-    $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60  -OutFile "$org-env.json"
-    
-    # if(!(test-path -PathType container env))
-    # {
-    #     mkdir "environments"
-    #     cd environments
-    # }
-    # else {
-    #     cd environments
-    # }
-    mkdir environments
-    cd environments
+    if(!(test-path -PathType container environments)){
+        mkdir "environments"
+        cd environments
+    }
+    else {
+        cd environments
+    }
 
     $envpath = $baseURL+$org+"/environments"
+    Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60  -OutFile "$org-env.json"
     $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
     
-
-    # -----------------------------Environments - KVMs -------------------------------------
-    # if(!(test-path -PathType container env-kvms))
-    # {
-    #     mkdir "env-kvms"
-    #     cd env-kvms
-    # }
-    # else {
-    #     cd env-kvms
-    # }
-    
+    #iterate for each environment
     foreach ($env in $($environments)) {
-        mkdir -p "$($env)"
-        cd $($env)
-        mkdir env-kvms
-        cd env-kvms
+
+        if(!(test-path -PathType container $($env))){
+            mkdir "$($env)"
+            cd $($env)
+        }
+        else {
+            cd $($env)
+        }
+
+        # -----------------------------Environments - KVMs -------------------------------------
+        if(!(test-path -PathType container env-kvms)){
+            mkdir "env-kvms"
+            cd env-kvms
+        }
+        else {
+            cd env-kvms
+        }
 
         $kvmpathenv = $baseURL+$org+"/environments/"+$($env)+"/keyvaluemaps"
         $envkvms = Invoke-RestMethod -Uri $kvmpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-kvms.json"
 
         foreach ($envkvm in $($envkvms)) {
-            mkdir -p "$envkvm"
-            cd $envkvm
+            if(!(test-path -PathType container $($envkvm))){
+                mkdir "$($envkvm)"
+                cd $($envkvm)
+            }
+            else {
+                cd $($envkvm)
+            }
+
             $kvmpathenv2 = $kvmpathenv+"/"+$($envkvm)+"/entries"
             $envkvm = Invoke-RestMethod -Uri $kvmpath2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-($($envkvm)).json"
             cd ..
         }
         cd ..
-    # -------------------------------Environments - Targetservers-----------------------------
-        # if(!(test-path -PathType container env-Targetservers))
-        # {
-        #     mkdir "env-Targetservers"
-        #     cd env-Targetservers
-        # }
-        # else {
-        #     cd env-Targetservers
-        # }
-        mkdir env-Targetservers
-        cd env-Targetservers
+
+        # -------------------------------Environments - Targetservers-----------------------------
+        if(!(test-path -PathType container env-Targetservers)){
+            mkdir "env-Targetservers"
+            cd env-Targetservers
+        }
+        else {
+            cd env-Targetservers
+        }
 
         $targetserverpathenv = $baseURL+$org+"/environments/"+$($env)+"/targetservers"
         $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-targetservers.json"
 
         foreach ($envtargetserver in $($envtargetservers)) {
-            mkdir -p "$envtargetserver"
-            cd $envtargetserver
+            if(!(test-path -PathType container $($envtargetserver))){
+                mkdir "$($envtargetserver)"
+                cd $($envtargetserver)
+            }
+            else {
+                cd $($envtargetserver)
+            }
+
             $targetserverpathenv2 = $envtargetserver+"/"+$($envtargetserver)
             $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-($($envtargetserver)).json"
             cd ..
         }
         cd ..
-    # --------------------------------Environment - Proxies--------------------------------------
 
-        # if(!(test-path -PathType container env-proxies))
-        # {
-        #     mkdir "env-proxies"
-        #     cd env-proxies
-        # }
-        # else {
-        #     cd env-proxies
-        # }
-        mkdir env-proxies
-        cd env-proxies
+        # --------------------------------Environment - Proxies--------------------------------------
+        if(!(test-path -PathType container env-proxies)){
+            mkdir "env-proxies"
+            cd env-proxies
+        }
+        else {
+            cd env-proxies
+        }
 
         $proxypathenv = $baseURL+$org+"/environments/"+$($env)+"/deployments"
         $envproxy = Invoke-RestMethod -Uri $proxypathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-proxies.json"
         
         cd ..
+
+        # # --------------------------------Environment - SharedFlows--------------------------------------
+        # if(!(test-path -PathType container env-sharedflows)){
+        #     mkdir "env-sharedflows"
+        #     cd env-sharedflows
+        # }
+        # else {
+        #     cd env-sharedflows
+        # }
+
+        # $sharedflowpathenv = $baseURL+$org+"/environments/"+$($env)+"/sharedflows"
+        # $envsharedflow = Invoke-RestMethod -Uri $sharedflowpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-sharedflow.json"
+        
+        # cd ..
+
+        # --------------------------------Environment - Resource Files--------------------------------------
+        # if(!(test-path -PathType container env-resourcefiles)){
+        #     mkdir "env-resourcefiles"
+        #     cd env-resourcefiles
+        # }
+        # else {
+        #     cd env-resourcefiles
+        # }
+
+        # $resourcefilespathenv = $baseURL+$org+"/environments/"+$($env)+"/resourcefiles"
+        # $envresourcefiles = Invoke-RestMethod -Uri $envresourcefiles -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-resourcefiles.json"
+        
+        # cd ..
     }
     cd ..
 
-    $envpath = $baseURL+$org+"/environments"
-    $environments = Invoke-RestMethod -Uri $envpath -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$org-env.json"
-    $kvmpathenv = $baseURL+$org+"/environments/"+$($env)+"/keyvaluemaps"
-    $envkvms = Invoke-RestMethod -Uri $kvmpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-kvms.json"
-
-    cd ..
-
-
 # -----------------------------Environments Closing-------------------------------------
 cd ..
-
