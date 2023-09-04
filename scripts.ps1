@@ -53,7 +53,7 @@ $headers = @{Authorization = "Bearer $token"}
                 cd $($proxy.name)
             }
             $path2 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions/"+$($proxyRevs)+"?format=bundle"
-            $zipFile = $org+"-proxy-"+$($proxy.name)+"-rev"+$($proxyRevs)+".zip"
+            $zipFile = $($proxy.name)+$($proxyRevs)+".zip"
             
             $response = Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $zipFile
 
@@ -109,7 +109,7 @@ $headers = @{Authorization = "Bearer $token"}
                 cd $($sharedflow.name)
             }
             $flowDetailRev2 = $baseURL+$org+"/sharedflows/"+$($sharedflow.name)+"/revisions/"+$($FlowRevs)+"?format=bundle"
-            $sharedflowzipFile = $org+"-sharedflows-"+$($sharedflow.name)+"-rev"+$($FlowRevs)+".zip"
+            $sharedflowzipFile = $($sharedflow.name)+$($FlowRevs)+".zip"
             
             $response = Invoke-RestMethod -Uri $flowDetailRev2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile $sharedflowzipFile
 
