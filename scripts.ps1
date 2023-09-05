@@ -404,10 +404,23 @@ else {
             else {
                 cd $latestRevision
             }
+            try {
+                $path2 = $baseURL+$org+"/environments/"+$($env)+"/apis/"+$($proxy.name)+"/revisions/"+$($latestRevision)+"/deployments"
+                Write-Host $path2
+                Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-proxy-$($proxy.name).json"
+                Write-Host "Done..."
+                # Get and print the status code
+                $statuscode = $path2.StatusCode
+                Write-Host "Status Code: $statuscode"
+                } catch [System.Net.HttpStatusCode] {
+                    # Handle the specific error (HTTP status code 409) gracefully
+                    Write-Host "Conflict (409) error occurred, but the script will continue."
+                } catch {
+                    # Handle any other exceptions that may occur
+                    Write-Host "An error occurred: $_"
+                }
 
-            $path2 = $baseURL+$org+"/environments/"+$($env)+"/apis/"+$($proxy.name)+"/revisions/"+$($latestRevision)+"/deployments"
-            Write-Host $path2
-            Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-proxy-$($proxy.name).json"
+            
             cd ..
             cd ..
         }
