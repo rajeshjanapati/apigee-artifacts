@@ -1,203 +1,86 @@
-# name: Apigee Artifacts Export
-# on:
-#   workflow_dispatch:
-
-# env:
-#   DEPLOYMENT_NAME: Apigee Artifacts Push # TODO: update to deployment name
-
-#   # Default Target Apigee Organization et environment
-#   APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
-#   APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
-#   GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-#   WORKFLOW_IDENTITY_FEDERATION_NAME: ${{ secrets.WORKFLOW_IDENTITY_FEDERATION_NAME }}
-#   APIGEE_BASE_URL: "https://apigee.googleapis.com/v1/organizations/"
-
-# jobs:
-#   apigee-window-artifacts:
-#     name: Artifacts Windows Export
-#     runs-on: windows-latest
-
-#     permissions:
-#       contents: 'read'
-#       id-token: 'write'
-
-#     steps:
-#       - name: Check out Git repository code
-#         uses: actions/checkout@v3
-#         with:
-#           persist-credentials: false
-#           fetch-depth: 0
-
-#       # Configure Workload Identity Federation and generate an access token.
-#       - id: 'auth'
-#         name: 'Authenticate to Google Apigee Cloud'
-#         uses: 'google-github-actions/auth@v1'
-#         with:
-#           token_format: 'access_token'
-#           workload_identity_provider: 'projects/127369686749/locations/global/workloadIdentityPools/github-test/providers/github-test'
-#           service_account: 'workload-identity-federation@esi-apigee-x-394004.iam.gserviceaccount.com'
-
-#       - name: Perform Apigee Export
-#         shell: pwsh
-#         run: |
-#           $env:ORG = "${{ secrets.APIGEE_ORG }}"
-#           $env:TOKEN = "${{ steps.auth.outputs.access_token }}"
-#           Invoke-Pester ./scripts.ps1 -Passthru
-
-#       - name: Remove GCP Credentials JSON File
-#         run: rm gha-creds*.json
-
-#       - name: Debug Git Config
-#         run: |
-#           git config --list
-
-#       - name: Add local files to Git local branch
-#         run: |
-#             git config --global user.email "rajeshjanapati@gmail.com"
-#             git config --global user.name "rajeshjanapati"
-#             git config --system core.longpaths true
-#             git add .
-
-#       - name: Check for delta changes - Git
-#         id: check_git_changes
-#         shell: powershell
-#         run: |
-#             $changes = git status --porcelain
-#             if (-not $changes) {
-#               Write-Host "No changes in the repository."
-#               exit 0
-#             } else {
-#               Write-Host "There are changes in the repository."
-#             }
-
-#       - name: Commit files to Git
-#         run: |
-#             git commit -a -m "Apigee Artifacts Export Updates"
-#             exit 0
-
-#       - name: Debug Git Status
-#         run: |
-#           git status
-
-#       - name: Push changes to Git
-#         uses: ad-m/github-push-action@master
-#         with:
-#           github_token: ${{ secrets.TOKEN_GIT }}
-#           branch: release/org
-
-name: Apigee Artifacts PowerShell
-
-on: push
-
- 
+name: Apigee Artifacts Export
+on:
+  workflow_dispatch:
 
 env:
+  DEPLOYMENT_NAME: Apigee Artifacts Push # TODO: update to deployment name
 
-  DEPLOYMENT_NAME: Apigee Artifacts # TODO: update to deployment name
-
- 
-
-  # Default Target Apigee Organization et environment (can be also be dynamically defined in [Set Variables *] steps)
-
+  # Default Target Apigee Organization et environment
   APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
-
   APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
-
   GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
-
   WORKFLOW_IDENTITY_FEDERATION_NAME: ${{ secrets.WORKFLOW_IDENTITY_FEDERATION_NAME }}
-
   APIGEE_BASE_URL: "https://apigee.googleapis.com/v1/organizations/"
 
- 
-
 jobs:
-
   apigee-window-artifacts:
-
     name: Artifacts Windows Export
-
     runs-on: windows-latest
 
- 
-
     permissions:
-
       contents: 'read'
-
       id-token: 'write'
 
- 
-
     steps:
-
-      - name: Check out repository code
+      - name: Check out Git repository code
         uses: actions/checkout@v3
         with:
           persist-credentials: false
           fetch-depth: 0
 
- 
-
       # Configure Workload Identity Federation and generate an access token.
-
       - id: 'auth'
-
         name: 'Authenticate to Google Apigee Cloud'
-
         uses: 'google-github-actions/auth@v1'
-
         with:
-
           token_format: 'access_token'
-
           workload_identity_provider: 'projects/127369686749/locations/global/workloadIdentityPools/github-test/providers/github-test'
-
           service_account: 'workload-identity-federation@esi-apigee-x-394004.iam.gserviceaccount.com'
 
-  
-
       - name: Perform Apigee Export
-
         shell: pwsh
-
         run: |
-
           $env:ORG = "${{ secrets.APIGEE_ORG }}"
-
           $env:TOKEN = "${{ steps.auth.outputs.access_token }}"
-
-          Invoke-Pester -Path .\scripts.ps1 -Passthru
-
- 
+          Invoke-Pester ./scripts.ps1 -Passthru
 
       - name: Remove GCP Credentials JSON File
-
         run: rm gha-creds*.json
 
- 
-
-      - name: Commit files
-
+      - name: Debug Git Config
         run: |
+          git config --list
 
-          git config --global user.email "rajeshjanapati@gmail.com"
+      - name: Add local files to Git local branch
+        run: |
+            git config --global user.email "rajeshjanapati@gmail.com"
+            git config --global user.name "rajeshjanapati"
+            git config --system core.longpaths true
+            git add .
 
-          git config --global user.name "rajeshjanapati"
-          
+      - name: Check for delta changes - Git
+        id: check_git_changes
+        shell: powershell
+        run: |
+            $changes = git status --porcelain
+            if (-not $changes) {
+              Write-Host "No changes in the repository."
+              exit 0
+            } else {
+              Write-Host "There are changes in the repository."
+            }
 
-          git add .
+      - name: Commit files to Git
+        run: |
+            git commit -a -m "Apigee Artifacts Export Updates"
+            exit 0
 
-          git commit -a -m "Add changes"
+      - name: Debug Git Status
+        run: |
+          git status
 
-      
-
-      - name: Push changes
-
+      - name: Push changes to Git
         uses: ad-m/github-push-action@master
-
         with:
-
           github_token: ${{ secrets.TOKEN_GIT }}
-
           branch: release/org
