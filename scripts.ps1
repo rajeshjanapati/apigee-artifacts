@@ -398,12 +398,12 @@ else {
                 cd $apiproxy
             }
 
-            if(!(test-path -PathType container $latestRevision)){
-                mkdir -p "$latestRevision"
-                cd $latestRevision
+            if(!(test-path -PathType container $revision)){
+                mkdir -p "$revision"
+                cd $revision
             }
             else {
-                cd $latestRevision
+                cd $revision
             }
 
             # Output the extracted values
