@@ -34,7 +34,7 @@ jobs:
         uses: 'google-github-actions/auth@v1'
         with:
           token_format: 'access_token'
-          workload_identity_provider: 'projects/127369686749/locations/global/workloadIdentityPools/pavan-apigee-git/providers/pavan-apigee-git'
+          workload_identity_provider: 'projects/127369686749/locations/global/workloadIdentityPools/github-test/providers/github-test'
           service_account: 'workload-identity-federation@esi-apigee-x-394004.iam.gserviceaccount.com'
 
       - name: Perform Apigee Export
