@@ -406,6 +406,7 @@ else {
             }
 
             $path2 = $baseURL+$org+"/apis/environments/"+$($env)+"/apis/"+$($proxy.name)+"/revisions/"+$($latestRevision)+"/deployments"
+            Write-Host $path2
             Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-proxy-$($proxy.name).json"
             cd ..
             cd ..
