@@ -5,17 +5,18 @@ on:
 env:
   DEPLOYMENT_NAME: Apigee Artifacts Push # TODO: update to deployment name
 
-  # Default Target Apigee Organization et environment
+  # Default Target Apigee Organization et environment (can be also be dynamically defined in [Set Variables *] steps)
   APIGEE_ORG: ${{ secrets.APIGEE_ORG }}
   APIGEE_ENV: ${{ secrets.APIGEE_ENV }}
   GCP_SERVICE_ACCOUNT: ${{ secrets.GCP_SERVICE_ACCOUNT }}
   WORKFLOW_IDENTITY_FEDERATION_NAME: ${{ secrets.WORKFLOW_IDENTITY_FEDERATION_NAME }}
   APIGEE_BASE_URL: "https://apigee.googleapis.com/v1/organizations/"
+  GITHUB_TOKEN: ${{ secrets.TOKEN_GIT }}
 
 jobs:
   apigee-window-artifacts:
-    name: Artifacts Windows Export
-    runs-on: windows-latest
+    name: FL Apigee Artifacts Export
+    runs-on: ubuntu-latest
 
     permissions:
       contents: 'read'
@@ -34,7 +35,7 @@ jobs:
         uses: 'google-github-actions/auth@v1'
         with:
           token_format: 'access_token'
-          workload_identity_provider: 'projects/127369686749/locations/global/workloadIdentityPools/github-test/providers/github-test'
+          workload_identity_provider: 'projects/127369686749/locations/global/workloadIdentityPools/pavan-apigee-git/providers/pavan-apigee-git'
           service_account: 'workload-identity-federation@esi-apigee-x-394004.iam.gserviceaccount.com'
 
       - name: Perform Apigee Export
@@ -42,7 +43,7 @@ jobs:
         run: |
           $env:ORG = "${{ secrets.APIGEE_ORG }}"
           $env:TOKEN = "${{ steps.auth.outputs.access_token }}"
-          Invoke-Pester ./scripts.ps1 -Passthru
+          Invoke-Pester scripts/apigeeXexport.ps1 -Passthru
 
       - name: Remove GCP Credentials JSON File
         run: rm gha-creds*.json
@@ -53,27 +54,26 @@ jobs:
 
       - name: Add local files to Git local branch
         run: |
-            git config --global user.email "rajeshjanapati@gmail.com"
-            git config --global user.name "rajeshjanapati"
-            git config --system core.longpaths true
+            git config --global user.email "pavan.sirasanambedu@gmail.com"
+            git config --global user.name "pavan2esi"
             git add .
 
       - name: Check for delta changes - Git
         id: check_git_changes
-        shell: powershell
         run: |
-            $changes = git status --porcelain
-            if (-not $changes) {
-              Write-Host "No changes in the repository."
-              exit 0
-            } else {
-              Write-Host "There are changes in the repository."
-            }
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Local branch is not up to date with remote_branch. Pushing latest code to Git"
+          else
+            echo "Local branch is up to date with Remote branch."
+            exit 0
+          fi
 
       - name: Commit files to Git
         run: |
+          if [[ -n "$(git status --porcelain)" ]]; then
             git commit -a -m "Apigee Artifacts Export Updates"
             exit 0
+          fi
 
       - name: Debug Git Status
         run: |
@@ -83,4 +83,5 @@ jobs:
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.TOKEN_GIT }}
-          branch: release/org
+          branch: artifacts
+          
