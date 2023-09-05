@@ -407,11 +407,8 @@ else {
             }
 
             # Output the extracted values
-            Write-Host "API Proxy: $apiproxy, Revision: $revision"
             $path2 = $baseURL+$org+"/environments/"+$($env)+"/apis/"+$apiproxy+"/revisions/"+$revision+"/deployments"
-            Write-Host $path2
             Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-proxy-$($proxy.name).json"
-            Write-Host "Done..."
             cd ..
             cd ..
         }
