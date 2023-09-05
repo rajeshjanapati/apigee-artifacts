@@ -55,6 +55,7 @@ jobs:
         run: |
             git config --global user.email "rajeshjanapati@gmail.com"
             git config --global user.name "rajeshjanapati"
+            git config --system core.longpaths true
             git add .
 
       - name: Check for delta changes - Git
