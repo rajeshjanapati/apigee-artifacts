@@ -379,22 +379,23 @@ else {
         $proxypathenv = $baseURL+$org+"/environments/"+$($env)+"/deployments"
         Invoke-RestMethod -Uri $proxypathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-proxies.json"
         
-        $path = $baseURL+$org+"/apis"
-        $proxies = Invoke-RestMethod -Uri "https://apigee.googleapis.com/v1/organizations/$org/apis" -Method 'GET' -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
+        $proxypathenv1 = "https://apigee.googleapis.com/v1/organizations/esi-apigee-x-394004/environments/eval/deployments"
+        Invoke-RestMethod -Uri $proxypathenv -Method Get -Headers $headers -ContentType "application/json" -ErrorAction Stop -TimeoutSec 60 -OutFile "$env-proxies.json"
 
-        foreach ($proxy in $($proxies.proxies)) {
-            $path1 = $baseURL+$org+"/apis/"+$($proxy.name)+"/revisions"
-            $proxyRevs = Invoke-RestMethod -Uri $path1 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
+        # Load the JSON data from the file
+        $jsonData = Get-Content -Path "$env-proxies.json" | ConvertFrom-Json
 
-            # Get the latest deployed revision number
-            $latestRevision = $proxyRevs | Measure-Object -Maximum | Select-Object -ExpandProperty Maximum
-
+        # Extract the apiproxy and revision values
+        $deployments = $jsonData.deployments
+        foreach ($deployment in $deployments) {
+            $apiproxy = $deployment.apiProxy
+            $revision = $deployment.revision
             if(!(test-path -PathType container $($proxy.name))){
-                mkdir -p "$($proxy.name)"
-                cd $($proxy.name)
+                mkdir -p "$apiproxy"
+                cd $apiproxy
             }
             else {
-                cd $($proxy.name)
+                cd $apiproxy
             }
 
             if(!(test-path -PathType container $latestRevision)){
@@ -404,23 +405,13 @@ else {
             else {
                 cd $latestRevision
             }
-            try {
-                $path2 = $baseURL+$org+"/environments/"+$($env)+"/apis/"+$($proxy.name)+"/revisions/"+$($latestRevision)+"/deployments"
-                Write-Host $path2
-                Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-proxy-$($proxy.name).json"
-                Write-Host "Done..."
-                # Get and print the status code
-                $statuscode = $path2.StatusCode
-                Write-Host "Status Code: $statuscode"
-                } catch [System.Net.HttpStatusCode] {
-                    # Handle the specific error (HTTP status code 409) gracefully
-                    Write-Host "Conflict (409) error occurred, but the script will continue."
-                } catch {
-                    # Handle any other exceptions that may occur
-                    Write-Host "An error occurred: $_"
-                }
 
-            
+            # Output the extracted values
+            Write-Host "API Proxy: $apiproxy, Revision: $revision"
+            $path2 = $baseURL+$org+"/environments/"+$($env)+"/apis/"+$apiproxy+"/revisions/"+$revision+"/deployments"
+            Write-Host $path2
+            Invoke-RestMethod -Uri $path2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-proxy-$($proxy.name).json"
+            Write-Host "Done..."
             cd ..
             cd ..
         }
