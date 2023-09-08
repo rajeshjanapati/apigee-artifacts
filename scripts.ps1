@@ -354,17 +354,17 @@ else {
 
         Write-Host $envtargetserver
 
-        foreach ($envtargetserver in $($envtargetservers)) {
+        foreach ($value in $($envtargetserver)) {
             Write-Host "Entered into TARGET SERVERS FOLDER..."
-            if(!(test-path -PathType container $($envtargetserver))){
-                mkdir "$($envtargetserver)"
-                cd $($envtargetserver)
+            if(!(test-path -PathType container $($value))){
+                mkdir "$($value)"
+                cd $($value)
             }
             else {
-                cd $($envtargetserver)
+                cd $($value)
             }
 
-            $targetserverpathenv2 = $envtargetserver+"/"+$($envtargetserver)
+            $targetserverpathenv2 = $targetserverpathenv+"/"+$value
             $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-($($envtargetserver)).json"
             cd ..
         }
