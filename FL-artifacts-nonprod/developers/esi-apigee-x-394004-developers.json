@@ -1,0 +1,16 @@
+{
+  "developer": [
+    {
+      "email": "test.developer@gmail.com"
+    },
+    {
+      "email": "pavancicd_2@example.com"
+    },
+    {
+      "email": "pavancicd_1@example.com"
+    },
+    {
+      "email": "check.developer@gmail.com"
+    }
+  ]
+}

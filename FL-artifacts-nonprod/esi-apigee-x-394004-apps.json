@@ -1,0 +1,106 @@
+{
+  "app": [
+    {
+      "appId": "7b987aed-d4f8-420c-87a4-2bb35962b411",
+      "attributes": [
+        {
+          "name": "DisplayName",
+          "value": "apigee__app_cicd"
+        }
+      ],
+      "createdAt": "1694159805952",
+      "credentials": [
+        {
+          "consumerKey": "yJoDes2OeNpKeFQuvnI7UnWZ6gVYfEtCL6SY6smgzLn6Ix2f",
+          "consumerSecret": "m697anenlznbLGGPJ5LmdEBZYu6WKRNgzLHfbdHjr7PAqxpbZSYxdkd9dyXiD7zn",
+          "expiresAt": "-1",
+          "issuedAt": "1694159805968",
+          "status": "approved"
+        }
+      ],
+      "developerId": "06aa9bfb-5aba-4975-92f6-83911d52abd7",
+      "lastModifiedAt": "1694159805952",
+      "name": "apigee__app_cicd",
+      "status": "approved"
+    },
+    {
+      "appId": "845731c0-a259-42c6-bf72-5d2305137527",
+      "attributes": [
+        {
+          "name": "developer-test-app",
+          "value": "developer app"
+        }
+      ],
+      "createdAt": "1694159805110",
+      "credentials": [
+        {
+          "consumerKey": "1536",
+          "consumerSecret": "7689",
+          "expiresAt": "1694160488600",
+          "issuedAt": "1694160308600",
+          "status": "approved"
+        },
+        {
+          "consumerKey": "LGFNQ0f3F0DyA1MXGioQ0ETAKlZjP9VxQn3SF8LdC29DfSBq",
+          "consumerSecret": "hZVDqZxHzyx4KHnr1Mzjuwxtochykdtvt1CwZcfDlYuJMYDwXK96aceZ3OQ0w8Vj",
+          "expiresAt": "-1",
+          "issuedAt": "1694159805129",
+          "status": "approved"
+        },
+        {
+          "consumerKey": "test153",
+          "consumerSecret": "6Wr30X2JASQew2htest",
+          "expiresAt": "1694166463335",
+          "issuedAt": "1694166283335",
+          "status": "approved"
+        }
+      ],
+      "developerId": "06aa9bfb-5aba-4975-92f6-83911d52abd7",
+      "lastModifiedAt": "1694159805110",
+      "name": "developer-test-app",
+      "status": "approved"
+    },
+    {
+      "appId": "10e63762-30c0-45bd-937c-725960e216b5",
+      "attributes": [
+        {
+          "name": "DisplayName",
+          "value": "apigee__app_cicd"
+        }
+      ],
+      "createdAt": "1693201567847",
+      "credentials": [
+        {
+          "apiProducts": [
+            {
+              "apiproduct": "EchoProductCICD",
+              "status": "approved"
+            }
+          ],
+          "consumerKey": "RA1bNzhAvUx3V4a8AkM8B6MqoKHVWhTjoeY8KwOl5GbJAAQl",
+          "consumerSecret": "bNcVyt3vo2EjAVU1MZBGXPfvlvGLbk7sJDhm4TJXX4og271YyhnhBxUlGPq3vVTz",
+          "expiresAt": "-1",
+          "issuedAt": "1693201567873",
+          "status": "approved"
+        },
+        {
+          "apiProducts": [
+            {
+              "apiproduct": "EchoProductCICD",
+              "status": "approved"
+            }
+          ],
+          "consumerKey": "apigee_cicd_key",
+          "consumerSecret": "apigee_12382782",
+          "expiresAt": "-1",
+          "issuedAt": "1693201738834",
+          "status": "approved"
+        }
+      ],
+      "developerId": "5383bdf3-56dc-424d-b73f-eb669546f32e",
+      "lastModifiedAt": "1693201567847",
+      "name": "apigee__app_cicd",
+      "status": "approved"
+    }
+  ]
+}

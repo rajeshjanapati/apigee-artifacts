@@ -1,0 +1,28 @@
+{
+  "apiProduct": [
+    {
+      "name": "testapikey"
+    },
+    {
+      "name": "test-key"
+    },
+    {
+      "name": "github-apiproduct"
+    },
+    {
+      "name": "EchoProduct-legacy CICD"
+    },
+    {
+      "name": "EchoProductCICD"
+    },
+    {
+      "name": "api-product"
+    },
+    {
+      "name": "Verify-key"
+    },
+    {
+      "name": "JWT-Credentials"
+    }
+  ]
+}
