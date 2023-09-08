@@ -365,7 +365,7 @@ else {
             }
 
             $targetserverpathenv2 = $targetserverpathenv+"/"+$value
-            $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-($($envtargetserver)).json"
+            $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv2 -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-($value).json"
             cd ..
         }
         cd ..
