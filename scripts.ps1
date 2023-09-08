@@ -352,6 +352,8 @@ else {
         Invoke-RestMethod -Uri $targetserverpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-targetservers.json"
         $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
+        Write-Host $envtargetserver
+
         foreach ($envtargetserver in $($envtargetservers)) {
             Write-Host "Entered into TARGET SERVERS FOLDER..."
             if(!(test-path -PathType container $($envtargetserver))){
