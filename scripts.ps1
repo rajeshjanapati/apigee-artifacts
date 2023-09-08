@@ -325,6 +325,7 @@ else {
         $envkvms = Invoke-RestMethod -Uri $kvmpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
         foreach ($envkvm in $($envkvms)) {
+            Write-Host "Entered into KVM FOLDER..."
             if(!(test-path -PathType container $($envkvm))){
                 mkdir "$($envkvm)"
                 cd $($envkvm)
