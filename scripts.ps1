@@ -325,7 +325,6 @@ else {
         $envkvms = Invoke-RestMethod -Uri $kvmpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
         foreach ($envkvm in $($envkvms)) {
-            Write-Host "Entered into KVM FOLDER..."
             if(!(test-path -PathType container $($envkvm))){
                 mkdir "$($envkvm)"
                 cd $($envkvm)
@@ -354,6 +353,7 @@ else {
         $envtargetserver = Invoke-RestMethod -Uri $targetserverpathenv -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60
 
         foreach ($envtargetserver in $($envtargetservers)) {
+            Write-Host "Entered into TARGET SERVERS FOLDER..."
             if(!(test-path -PathType container $($envtargetserver))){
                 mkdir "$($envtargetserver)"
                 cd $($envtargetserver)
@@ -442,7 +442,7 @@ else {
         # $resourcefilespathenv = $baseURL+$org+"/environments/"+$($env)+"/resourcefiles"
         # $envresourcefiles = Invoke-RestMethod -Uri $envresourcefiles -Method:Get -Headers $headers -ContentType "application/json" -ErrorAction:Stop -TimeoutSec 60 -OutFile "$env-resourcefiles.json"
         
-        # cd ..
+        cd ..
     }
     cd ..
 
