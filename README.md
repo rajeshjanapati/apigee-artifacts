@@ -18,6 +18,7 @@ Please find the nightly extracted data of apigee-x in the artifacts branch, for 
 * Export all artifacts from Apigee X and Push changes Github
 * Handling Newly created artifacts
 * Handling Deleted Artifacts, if any user performed a hard delete
+* AES Encryption is done for KVM Entries and ConsumerKey & consumerSecret for Apps
 
 
 For a comprehensive list of Apigee API Management APIs, please visit the [Apigee API Management APIs page](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest).
