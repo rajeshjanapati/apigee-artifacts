@@ -12,13 +12,14 @@ Welcome to the Apigee Artifacts repository! This repository contains details abo
 
 This project automates the nightly extraction of Apigee X Artifacts. The workflow is scheduled to run at specific times using cron expressions. When executed, the workflow utilizes Apigee Management APIs to create Proxies, SharedFlows, Environment Config Variables, and more within this GitHub repository. Each item is detailed and documented as part of the process.
 
+For configuration variables like KVMs, Apps data has been encrypted, including KVM Entries, consumer key, and consumer secret, and stored in specific file paths at both the organization and environment levels. For each extracted item, in-depth details are provided to offer a comprehensive understanding. Proxies and shared flows, for instance, include information such as policies, base paths, and deployed environments, stored at respective filepaths for both organization and environment levels. Developers and API Products have their complete details stored in respective file paths.
+
 For a comprehensive list of Apigee API Management APIs, please visit the [Apigee API Management APIs page](https://cloud.google.com/apigee/docs/reference/apis/apigee/rest).
 
 **License:**
 
-Please note that to implement the above proof-of-concept (POC), you must have access to an Apigee X enterprise account or a trial account.
+Please note that to implement the above proof-of-concept (POC), access to an Apigee X enterprise account or a trial account is required.
 
-For any questions or contributions, feel free to reach out and collaborate with us!
+For any questions or contributions, please feel free to reach out and collaborate with us!
 
 Thank you for visiting our repository and exploring Apigee X Artifacts.
-
